@@ -11,7 +11,7 @@ Feedback can be provided. The feedback can either be "liked the book", "disliked
 
 
 ## Domain
-![domain](https://photos-3.dropbox.com/t/2/AAB82xKEpygEKyAJ5pIVegg52pZmuGpaaNBruU3h2wqGJQ/12/51974941/png/32x32/1/_/1/2/Book-Recommendation-System-Domain%20(1).png/EJKbhCgY1ooBIAcoBw/UdhYRNcbYRz5SBL58SR9RS7okYBXvcBjtat97jcAIsU?preserve_transparency=1&size=2048x1536&size_mode=3)
+![domain](https://raw.githubusercontent.com/Leomn138/book-recommendation-system/master/recommendation-service/files/Book-Recommendation-System-Domain.png)
 
 ## Recommendation Algorithm
 
