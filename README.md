@@ -43,6 +43,8 @@ In this approach explicit feedback was used as can be seen on model training:
     }
 ```
 
+A cron was implemented to train the model from hour to hour.
+
 ## API Specifications
 
 #### /books/:asin
@@ -51,10 +53,14 @@ In this approach explicit feedback was used as can be seen on model training:
 ##### Ok Response
 ```json
 {
-    "asin": "string",
-    "author": "string",
-    "genre": "string",
-    "title": "string"
+  "asin": "string",
+  "author": "string",
+  "error": {
+    "message": "string"
+  },
+  "genre": "string",
+  "statusCode": "int",
+  "title": "string"
 }
 ```
 
@@ -64,12 +70,16 @@ In this approach explicit feedback was used as can be seen on model training:
 ##### Ok Response
 ```json
 [
-    {
-        "asin": "string",
-        "author": "string",
-        "genre": "string",
-        "title": "string"
-    }
+  {
+    "asin": "string",
+    "author": "string",
+    "error": {
+      "message": "string"
+    },
+    "genre": "string",
+    "statusCode": "int",
+    "title": "string"
+  }
 ]
 ```
 
@@ -77,14 +87,20 @@ In this approach explicit feedback was used as can be seen on model training:
 * `GET` : Get top 20 book recommendations for a user.
 ##### Ok Response
 ```json
-[
-    {
+{
+  "statusCode": "int",
+  "error": {
+        "message": "string"
+      },
+  "books": [
+      {
         "asin": "string",
         "author": "string",
         "genre": "string",
         "title": "string"
-    }
-]
+      }
+  ]
+}
 ```
 
 #### /users
@@ -99,8 +115,12 @@ In this approach explicit feedback was used as can be seen on model training:
 ##### Created Response
 ```json
 {
-    "name": "string",
-    "username": "string"
+  "error": {
+    "message": "string"
+  },
+  "name": "string",
+  "statusCode": "int",
+  "username": "string"
 }
 ```
 
@@ -112,18 +132,31 @@ Rating Levels are LIKED, DISLIKED and NOT_INTERESTED.
 ```json
 {
     "asin": "string",
-    "username": "string",
     "ratingLevel": "string"
 }
 ```
 ##### Created Response
 ```json
 {
-    "asin": "string",
-    "username": "string",
-    "ratingLevel": "string"
+  "asin": "string",
+  "error": {
+    "message": "string"
+  },
+  "ratingLevel": "string",
+  "statusCode": "int",
+  "username": "string"
 }
 ```
 More details can be found on {base-uri}/swagger-ui.html.
 
 ## How to Run Everything
+
+### Requirements
+* Java 1.8;
+* Scala 2.12.6;
+* Spark 2.2.1;
+
+### Steps
+* Navigate to your Spark's folder and on your Terminal run ```./bin/spark-shell --master local```
+* On your terminal run ```docker run --detach --name=mysql -p 52000:3306  --env="MYSQL_ROOT_PASSWORD=leomn138" mysql```;
+* The you can initialize first the config app and then the recommendation-service app;
