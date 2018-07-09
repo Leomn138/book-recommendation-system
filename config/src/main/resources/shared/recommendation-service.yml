@@ -16,3 +16,11 @@ spring:
         show_sql: true
         use_sql_comments: true
         format_sql: true
+spark:
+  environment: local
+  applicationName: BookRecommendationSystem
+  model:
+    train:
+      rank: 10
+      interactionsNumber: 10
+      lambda: 0.01

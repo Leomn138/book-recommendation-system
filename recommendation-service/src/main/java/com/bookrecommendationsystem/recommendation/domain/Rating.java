@@ -1,7 +1,5 @@
 package com.bookrecommendationsystem.recommendation.domain;
 
-import org.springframework.hateoas.ResourceSupport;
-
 import javax.persistence.*;
 import java.io.Serializable;
 

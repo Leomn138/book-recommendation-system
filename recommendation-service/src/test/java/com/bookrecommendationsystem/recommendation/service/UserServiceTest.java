@@ -4,8 +4,6 @@ import com.bookrecommendationsystem.recommendation.domain.Book;
 import com.bookrecommendationsystem.recommendation.domain.Rating;
 import com.bookrecommendationsystem.recommendation.domain.User;
 import com.bookrecommendationsystem.recommendation.dto.*;
-import com.bookrecommendationsystem.recommendation.exception.BookNotFoundException;
-import com.bookrecommendationsystem.recommendation.exception.UserNotFoundException;
 import com.bookrecommendationsystem.recommendation.repository.BookRepository;
 import com.bookrecommendationsystem.recommendation.repository.RatingRepository;
 import com.bookrecommendationsystem.recommendation.repository.UserRepository;
@@ -16,10 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import java.util.Set;
-
+import org.springframework.http.HttpStatus;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -37,13 +36,16 @@ public class UserServiceTest {
     @Mock
     private RatingRepository ratingRepository;
 
+    @Mock
+    private RecommendationService recommendationService;
+
     @Before
     public void setup() {
         initMocks(this);
     }
 
     @Test
-    public void shouldCreateNewUser() {
+    public void userService_CreateNewUser_ShouldReturnNewUserResponse() {
 
         final UserRequestV1 userRequest = UserStub.getRequest();
         final User user = UserStub.get();
@@ -54,17 +56,22 @@ public class UserServiceTest {
 
         assertEquals(userRequest.getName(), found.getName());
         assertEquals(userRequest.getUsername(), found.getUsername());
+        assertEquals(HttpStatus.CREATED, found.getStatusCode());
+        assertNull(found.getError());
     }
 
-   @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionWhenUsernameIsNullOnUserCreation() {
+   @Test
+    public void userService_CreateNewUser_WhenUsernameIsNotFilled_ShouldReturnBadRequestError() {
         final UserRequestV1 user = new UserRequestV1();
 
-        userService.createNewUser(user);
+       UserResponseV1 found = userService.createNewUser(user);
+
+       assertEquals(HttpStatus.BAD_REQUEST, found.getStatusCode());
+       assertEquals("Username or name are not provided.", found.getError().getMessage());
     }
 
     @Test
-    public void shouldCreateNewRating() throws BookNotFoundException, UserNotFoundException {
+    public void userService_CreateNewRating_ShouldReturnUpsertRatingResponse() {
         final Rating rating = RatingStub.get();
         final RatingPostRequestV1 ratingPostRequest = RatingStub.getPostRequest();
 
@@ -73,66 +80,108 @@ public class UserServiceTest {
         when(ratingRepository.findByUserAndBook(any(), any())).thenReturn(null);
         when(ratingRepository.save(any())).thenReturn(rating);
 
-        RatingResponseV1 found = userService.upsertRating(rating.getUser().getUsername(), ratingPostRequest);
+        RatingResponseV1 found = userService.createNewRating(rating.getUser().getUsername(), ratingPostRequest);
 
         assertEquals(rating.getBook().getAsin(), found.getAsin());
         assertEquals(rating.getRatingLevel(), found.getRatingLevel());
         assertEquals(rating.getUser().getUsername(), found.getUsername());
+        assertEquals(HttpStatus.CREATED, found.getStatusCode());
+        assertNull(found.getError());
     }
 
     @Test
-    public void shouldUpdateRating() throws BookNotFoundException, UserNotFoundException {
+    public void userService_UpdateRating_ShouldReturnUpsertRatingResponse() {
         final Rating rating = RatingStub.get();
         final RatingPutRequestV1 ratingPutRequest = RatingStub.getPutRequest();
 
-        when(userRepository.findByUsername(rating.getUser().getUsername())).thenReturn(rating.getUser());
-        when(bookRepository.findByAsin(rating.getBook().getAsin())).thenReturn(rating.getBook());
-        when(ratingRepository.findByUserAndBook(rating.getUser(), rating.getBook())).thenReturn(rating);
-        when(ratingRepository.save(rating)).thenReturn(rating);
+        when(userRepository.findByUsername(any())).thenReturn(rating.getUser());
+        when(bookRepository.findByAsin(any())).thenReturn(rating.getBook());
+        when(ratingRepository.findByUserAndBook(any(), any())).thenReturn(rating);
+        when(ratingRepository.save(any())).thenReturn(rating);
 
         RatingResponseV1 found = userService.upsertRating(rating.getUser().getUsername(), rating.getBook().getAsin(), ratingPutRequest);
 
         assertEquals(rating.getBook().getAsin(), found.getAsin());
         assertEquals(rating.getRatingLevel(), found.getRatingLevel());
         assertEquals(rating.getUser().getUsername(), found.getUsername());
+        assertEquals(HttpStatus.CREATED, found.getStatusCode());
+        assertNull(found.getError());
     }
 
-    @Test(expected = UserNotFoundException.class)
-    public void shouldThrowUserNotFoundExceptionWhenUsernameDoesNotExistOnCreateNewRating() throws BookNotFoundException, UserNotFoundException {
+    @Test
+    public void userService_UpsertRating_WhenUsernameDoesNotExist_ShouldReturnNotFoundResponse(){
         final RatingPostRequestV1 ratingPostRequest = RatingStub.getPostRequest();
-        userService.upsertRating("123", ratingPostRequest);
+
+        when(userRepository.findByUsername(any())).thenReturn(null);
+
+        RatingResponseV1 found = userService.createNewRating("123", ratingPostRequest);
+
+        assertEquals(HttpStatus.NOT_FOUND, found.getStatusCode());
+        assertEquals("Username 123 not found.", found.getError().getMessage());
     }
 
-    @Test(expected = BookNotFoundException.class)
-    public void shouldThrowBookNotFoundExceptionWhenAsinDoesNotExistOnCreateNewRating() throws BookNotFoundException, UserNotFoundException {
+    @Test
+    public void userService_UpsertRating_WhenAsinDoesNotExist_ShouldReturnNotFoundResponse(){
         final User user = UserStub.get();
         final RatingPostRequestV1 ratingPostRequest = RatingStub.getPostRequest();
-        when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
 
-        userService.upsertRating(user.getUsername(), ratingPostRequest);
+        when(userRepository.findByUsername(any())).thenReturn(user);
+        when(bookRepository.findByAsin(any())).thenReturn(null);
+
+        RatingResponseV1 found = userService.createNewRating(user.getUsername(), ratingPostRequest);
+
+        assertEquals(HttpStatus.NOT_FOUND, found.getStatusCode());
+        assertEquals("Book asin: 1234 not found.", found.getError().getMessage());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionWhenRatingLevelDoesNotExistOnRatingUpsert() throws BookNotFoundException, UserNotFoundException {
+    @Test
+    public void userService_UpsertRating_WhenRatingLevelDoesNotExist_ShouldReturnBadRequestResponse() {
         final Rating rating = RatingStub.get();
         RatingPostRequestV1 ratingPostRequest = new RatingPostRequestV1();
-        ratingPostRequest.setRatingLevel("NOT_EXIST");
+        ratingPostRequest.setRatingLevel("NOT_EXISTS");
 
         when(userRepository.findByUsername(any())).thenReturn(rating.getUser());
         when(bookRepository.findByAsin(any())).thenReturn(rating.getBook());
         when(ratingRepository.findByUserAndBook(any(), any())).thenReturn(rating);
 
-        userService.upsertRating(rating.getUser().getUsername(), ratingPostRequest);
+        RatingResponseV1 found = userService.createNewRating(rating.getUser().getUsername(), ratingPostRequest);
+
+        assertEquals(HttpStatus.BAD_REQUEST, found.getStatusCode());
+        assertEquals("RatingLevel: NOT_EXISTS does not exist. Choose LIKE, DISLIKE or NOT_INTERESTED", found.getError().getMessage());
     }
+
+    /*@Test
+    public void userService_GetRecommendations_ShouldReturnListOfBooksResponse() {
+        List<Integer> asinList = new ArrayList<>();
+        asinList.add(321331331);
+        asinList.add(456);
+
+        Book book = BookStub.get();
+        User user = UserStub.get();
+
+        when(userRepository.findByUsername(any())).thenReturn(user);
+        when(recommendationService.getTwentyRecommendationsForAnUser(any())).thenReturn(asinList);
+        when(bookRepository.findByAsin("321331331")).thenReturn(book);
+        when(bookRepository.findByAsin("456")).thenReturn(null);
+
+        RecommendationResponseV1 response = userService.getRecommendations("leomn138");
+
+        assertEquals(1, response.getBooks().size());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getError());
+        assertEquals(book.getAsin(), ((BookResponseV1)response.getBooks().toArray()[0]).getAsin());
+        assertEquals(book.getAuthor(), ((BookResponseV1)response.getBooks().toArray()[0]).getAuthor());
+        assertEquals(book.getTitle(), ((BookResponseV1)response.getBooks().toArray()[0]).getTitle());
+        assertEquals(book.getGenre(), ((BookResponseV1)response.getBooks().toArray()[0]).getGenre());
+    }*/
 
     @Test
-    public void shouldGetRecommendations() {
+    public void userService_GetRecommendations_WhenUsernameDoesNotExist_ShouldReturnNotFoundResponse() {
+        when(userRepository.findByUsername(any())).thenReturn(null);
+        RecommendationResponseV1 found = userService.getRecommendations("123");
 
-
-    }
-
-    @Test(expected = UserNotFoundException.class)
-    public void shouldThrowUserNotFoundExceptionWhenUsernameDoesNotExistOnGetRecommendations() throws UserNotFoundException {
-        userService.getRecommendations("123");
+        assertNull(found.getBooks());
+        assertEquals(HttpStatus.NOT_FOUND, found.getStatusCode());
+        assertEquals("Username 123 not found.", found.getError().getMessage());
     }
 }

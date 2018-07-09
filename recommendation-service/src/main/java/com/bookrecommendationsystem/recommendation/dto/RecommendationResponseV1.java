@@ -1,12 +1,12 @@
 package com.bookrecommendationsystem.recommendation.dto;
 
 import org.springframework.http.HttpStatus;
+import java.util.Set;
 
-public class UserResponseV1 {
-    private String username;
-    private String name;
-    private ErrorResponseV1 error;
+public class RecommendationResponseV1 {
+    private Set<BookResponseV1> books;
     private HttpStatus statusCode;
+    private ErrorResponseV1 error;
 
     public HttpStatus getStatusCode() {
         return statusCode;
@@ -22,17 +22,10 @@ public class UserResponseV1 {
         this.error = error;
     }
 
-    public String getUsername() {
-        return username;
+    public Set<BookResponseV1> getBooks() {
+        return books;
     }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
+    public void setBooks(Set<BookResponseV1> books) {
+        this.books = books;
     }
 }

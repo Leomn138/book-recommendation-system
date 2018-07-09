@@ -2,6 +2,8 @@ package com.bookrecommendationsystem.recommendation.stub;
 
 import com.bookrecommendationsystem.recommendation.domain.Book;
 import com.bookrecommendationsystem.recommendation.dto.BookResponseV1;
+import com.bookrecommendationsystem.recommendation.dto.ErrorResponseV1;
+import org.springframework.http.HttpStatus;
 
 public class BookStub {
     public static Book get() {
@@ -19,6 +21,16 @@ public class BookStub {
         book.setTitle("DDD");
         book.setAuthor("Eric Evans");
         book.setGenre("IT");
+        book.setStatusCode(HttpStatus.OK);
         return book;
+    }
+
+    public static BookResponseV1 getBookNotFoundResponse() {
+        ErrorResponseV1 error = new ErrorResponseV1();
+        error.setMessage("Book asin: " + 123 + " not found.");
+        BookResponseV1 bookResponse = new BookResponseV1();
+        bookResponse.setStatusCode(HttpStatus.NOT_FOUND);
+        bookResponse.setError(error);
+        return bookResponse;
     }
 }

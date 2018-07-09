@@ -2,20 +2,16 @@ package com.bookrecommendationsystem.recommendation.service;
 
 import com.bookrecommendationsystem.recommendation.domain.*;
 import com.bookrecommendationsystem.recommendation.dto.BookResponseV1;
-import com.bookrecommendationsystem.recommendation.exception.BookNotFoundException;
 import com.bookrecommendationsystem.recommendation.repository.BookRepository;
 import com.bookrecommendationsystem.recommendation.stub.BookStub;
-import com.bookrecommendationsystem.recommendation.stub.UserStub;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
@@ -35,27 +31,30 @@ public class BookServiceTest {
 	}
 
 	@Test
-	public void shouldFindByAsin() throws BookNotFoundException {
-
+	public void bookService_FindByAsin_ShouldReturnCorrectBook() {
 		final Book book = BookStub.get();
+		final BookResponseV1 bookResponse = BookStub.getResponse();
 
-		when(repository.findByAsin(book.getAsin())).thenReturn(book);
+		when(repository.findByAsin(any())).thenReturn(book);
 		BookResponseV1 found = bookService.findByAsin(book.getAsin());
 
-		assertEquals(book.getAsin(), found.getAsin());
-		assertEquals(book.getAuthor(), found.getAuthor());
-		assertEquals(book.getTitle(), found.getTitle());
-		assertEquals(book.getGenre(), found.getGenre());
-
-	}
-
-	@Test(expected = BookNotFoundException.class)
-	public void shouldThrowBookNotFoundExceptionWhenAsinIsEmpty() throws BookNotFoundException {
-		bookService.findByAsin("");
+		assertEquals(bookResponse.getAsin(), found.getAsin());
+		assertEquals(bookResponse.getAuthor(), found.getAuthor());
+		assertEquals(bookResponse.getTitle(), found.getTitle());
+		assertEquals(bookResponse.getGenre(), found.getGenre());
+		assertEquals(bookResponse.getStatusCode(), found.getStatusCode());
+		assertNull(found.getError());
 	}
 
 	@Test
-	public void shouldFindAllBooks() {
+	public void bookService_FindByAsyn_WhenAsinIsEmpty_ShouldReturnNotFoundError() {
+		BookResponseV1 found = bookService.findByAsin("123");
+		assertEquals(HttpStatus.NOT_FOUND, found.getStatusCode());
+		assertEquals("Book asin: 123 not found.", found.getError().getMessage());
+	}
+
+	@Test
+	public void bookService_FindAllBooks_ShouldReturnAllBooks() {
 		final Book book = BookStub.get();
 		Iterable<Book> iterableBooks = Arrays.asList(book);
 

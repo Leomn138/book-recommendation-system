@@ -6,6 +6,7 @@ import com.bookrecommendationsystem.recommendation.domain.User;
 import com.bookrecommendationsystem.recommendation.dto.RatingPostRequestV1;
 import com.bookrecommendationsystem.recommendation.dto.RatingPutRequestV1;
 import com.bookrecommendationsystem.recommendation.dto.RatingResponseV1;
+import org.springframework.http.HttpStatus;
 
 public class RatingStub {
     public static Rating get() {
@@ -25,7 +26,7 @@ public class RatingStub {
         rating.setAsin("1234");
         rating.setUsername("leomn138");
         rating.setRatingLevel("LIKED");
-
+        rating.setStatusCode(HttpStatus.CREATED);
         return rating;
     }
 

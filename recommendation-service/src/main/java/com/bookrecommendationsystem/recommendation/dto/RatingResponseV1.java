@@ -1,12 +1,26 @@
 package com.bookrecommendationsystem.recommendation.dto;
 
-import com.bookrecommendationsystem.recommendation.domain.Book;
-import com.bookrecommendationsystem.recommendation.domain.User;
+import org.springframework.http.HttpStatus;
 
 public class RatingResponseV1 {
-    String asin;
-    String username;
-    String ratingLevel;
+    private String asin;
+    private String username;
+    private String ratingLevel;
+    private ErrorResponseV1 error;
+    private HttpStatus statusCode;
+
+    public HttpStatus getStatusCode() {
+        return statusCode;
+    }
+    public void setStatusCode(HttpStatus statusCode) {
+        this.statusCode = statusCode;
+    }
+    public ErrorResponseV1 getError() {
+        return error;
+    }
+    public void setError(ErrorResponseV1 error) {
+        this.error = error;
+    }
 
     public String getAsin() {
         return asin;
