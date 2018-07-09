@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 public class UserStub {
     public static User get() {
         User user = new User();
+        user.setId(Long.parseLong("1"));
         user.setName("Leonardo Nascimento");
         user.setUsername("leomn138");
 

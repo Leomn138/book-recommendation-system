@@ -31,6 +31,9 @@ public class UserServiceTest {
     private BookRepository bookRepository;
 
     @Mock
+    private BookService bookService;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -150,19 +153,19 @@ public class UserServiceTest {
         assertEquals("RatingLevel: NOT_EXISTS does not exist. Choose LIKE, DISLIKE or NOT_INTERESTED", found.getError().getMessage());
     }
 
-    /*@Test
+    @Test
     public void userService_GetRecommendations_ShouldReturnListOfBooksResponse() {
         List<Integer> asinList = new ArrayList<>();
         asinList.add(321331331);
         asinList.add(456);
 
-        Book book = BookStub.get();
+        BookResponseV1 book = BookStub.getResponse();
         User user = UserStub.get();
 
+        when(recommendationService.getTwentyRecommendationsForAnUser(1)).thenReturn(asinList);
+        when(bookService.findByAsin("321331331")).thenReturn(book);
+        when(bookService.findByAsin("456")).thenReturn(null);
         when(userRepository.findByUsername(any())).thenReturn(user);
-        when(recommendationService.getTwentyRecommendationsForAnUser(any())).thenReturn(asinList);
-        when(bookRepository.findByAsin("321331331")).thenReturn(book);
-        when(bookRepository.findByAsin("456")).thenReturn(null);
 
         RecommendationResponseV1 response = userService.getRecommendations("leomn138");
 
@@ -173,7 +176,7 @@ public class UserServiceTest {
         assertEquals(book.getAuthor(), ((BookResponseV1)response.getBooks().toArray()[0]).getAuthor());
         assertEquals(book.getTitle(), ((BookResponseV1)response.getBooks().toArray()[0]).getTitle());
         assertEquals(book.getGenre(), ((BookResponseV1)response.getBooks().toArray()[0]).getGenre());
-    }*/
+    }
 
     @Test
     public void userService_GetRecommendations_WhenUsernameDoesNotExist_ShouldReturnNotFoundResponse() {
