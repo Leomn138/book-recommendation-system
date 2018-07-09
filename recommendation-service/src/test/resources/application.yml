@@ -7,7 +7,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         show_sql: true
@@ -21,3 +21,4 @@ spark:
       rank: 10
       interactionsNumber: 10
       lambda: 0.01
+      cron: 0 0 * ? * *

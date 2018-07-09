@@ -28,18 +28,16 @@ public class RatingRepositoryTest {
 	@Autowired
 	private BookRepository bookRepository;
 
-	@Before
-	public void removeAllRows() {
-		repository.deleteAll();
-	}
-
 	@Test
 	public void shouldFindRatingByUserAndBook() {
 		Book book = BookStub.get();
 		bookRepository.save(book);
 		User user = UserStub.get();
 		userRepository.save(user);
-		Rating stub = RatingStub.get();
+		Rating stub = new Rating();
+		stub.setUser(user);
+		stub.setBook(book);
+		stub.setRatingLevel("LIKED");
 		repository.save(stub);
 
 		Rating found = repository.findByUserAndBook(stub.getUser(), stub.getBook());

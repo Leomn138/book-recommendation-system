@@ -20,11 +20,6 @@ public class BookRepositoryTest {
 	@Autowired
 	private BookRepository repository;
 
-	@Before
-	public void removeAllRows() {
-		repository.deleteAll();
-	}
-
 	@Test
 	public void shouldFindBookByAsin() {
 

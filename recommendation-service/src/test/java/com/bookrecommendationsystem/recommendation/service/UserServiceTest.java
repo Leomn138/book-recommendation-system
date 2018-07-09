@@ -1,6 +1,5 @@
 package com.bookrecommendationsystem.recommendation.service;
 
-import com.bookrecommendationsystem.recommendation.domain.Book;
 import com.bookrecommendationsystem.recommendation.domain.Rating;
 import com.bookrecommendationsystem.recommendation.domain.User;
 import com.bookrecommendationsystem.recommendation.dto.*;

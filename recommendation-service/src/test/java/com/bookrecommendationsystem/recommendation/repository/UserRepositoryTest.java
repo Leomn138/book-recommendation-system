@@ -18,11 +18,6 @@ public class UserRepositoryTest {
 	@Autowired
 	private UserRepository repository;
 
-	@Before
-	public void removeAllRows() {
-		repository.deleteAll();
-	}
-
 	@Test
 	public void shouldFindUserByUsername() {
 
