@@ -9,12 +9,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,14 +23,20 @@ import java.util.Collection;
 @EnableConfigurationProperties
 @Configuration
 @EnableSwagger2
+@EnableScheduling
 public class BookRecommendationApplication {
 	private static ConfigurableApplicationContext context;
 	public static void main(String[] args) {
 		context = SpringApplication.run(BookRecommendationApplication.class, args);
-
 		context.getBean(RecommendationService.class).init(getSparkEnvironment(), getSparkApplicationName());
+		trainModel();
+	}
+
+	@Scheduled(cron = "${spark.model.train.cron}")
+	private static void trainModel() {
 		context.getBean(RecommendationService.class)
 				.trainModel(new ArrayList<Rating>((Collection)context.getBean(RatingRepository.class).findAll()), getSparkModelTrainRank(), getSparkModelTrainInteractionsNumber(), getSparkModelTrainLambda());
+
 	}
 
 	@Bean

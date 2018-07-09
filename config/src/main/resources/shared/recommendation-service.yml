@@ -24,3 +24,4 @@ spark:
       rank: 10
       interactionsNumber: 10
       lambda: 0.01
+      cron: 0 0 * ? * *
