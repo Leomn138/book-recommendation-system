@@ -11,11 +11,11 @@ public class Rating implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "username")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "asin")
+    @JoinColumn(name = "book_id")
     private Book book;
 
 
