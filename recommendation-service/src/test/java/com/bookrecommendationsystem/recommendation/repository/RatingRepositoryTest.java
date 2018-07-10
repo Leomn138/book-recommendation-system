@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -44,5 +46,22 @@ public class RatingRepositoryTest {
 		assertEquals(user.getUsername(), found.getUser().getUsername());
 		assertEquals(book.getAsin(), found.getBook().getAsin());
 		assertEquals(stub.getRatingLevel(), found.getRatingLevel());
+	}
+
+	@Test
+	public void shouldFindMostRelevantBooks() {
+		Book book = BookStub.get();
+		bookRepository.save(book);
+		User user = UserStub.get();
+		userRepository.save(user);
+		Rating stub = new Rating();
+		stub.setUser(user);
+		stub.setBook(book);
+		stub.setRatingLevel("LIKED");
+		repository.save(stub);
+
+		List<Book> found = repository.findMostRelevantBooks();
+
+		assertEquals(book.getAsin(), found.get(0).getAsin());
 	}
 }

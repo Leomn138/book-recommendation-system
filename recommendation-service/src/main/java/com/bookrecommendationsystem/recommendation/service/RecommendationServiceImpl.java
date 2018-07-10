@@ -37,7 +37,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public List<Integer> getTwentyRecommendationsForAnUser(int userId) {
+    public List<Integer> getTwentyRecommendationsForAnUser(int userId) throws Exception{
         final int numberOfRecommendations = 20;
         org.apache.spark.mllib.recommendation.Rating[] response = model.recommendProducts(userId, numberOfRecommendations);
         List<Integer> asinList = new ArrayList();

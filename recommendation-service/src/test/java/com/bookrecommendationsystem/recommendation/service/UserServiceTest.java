@@ -1,5 +1,6 @@
 package com.bookrecommendationsystem.recommendation.service;
 
+import com.bookrecommendationsystem.recommendation.domain.Book;
 import com.bookrecommendationsystem.recommendation.domain.Rating;
 import com.bookrecommendationsystem.recommendation.domain.User;
 import com.bookrecommendationsystem.recommendation.dto.*;
@@ -153,7 +154,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void userService_GetRecommendations_ShouldReturnListOfBooksResponse() {
+    public void userService_GetRecommendations_ShouldReturnListOfBooksResponse() throws Exception {
         List<Integer> asinList = new ArrayList<>();
         asinList.add(321331331);
         asinList.add(456);
@@ -166,6 +167,27 @@ public class UserServiceTest {
         when(bookService.findByAsin("456")).thenReturn(null);
         when(userRepository.findByUsername(any())).thenReturn(user);
 
+        RecommendationResponseV1 response = userService.getRecommendations("leomn138");
+
+        assertEquals(1, response.getBooks().size());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getError());
+        assertEquals(book.getAsin(), ((BookResponseV1)response.getBooks().toArray()[0]).getAsin());
+        assertEquals(book.getAuthor(), ((BookResponseV1)response.getBooks().toArray()[0]).getAuthor());
+        assertEquals(book.getTitle(), ((BookResponseV1)response.getBooks().toArray()[0]).getTitle());
+        assertEquals(book.getGenre(), ((BookResponseV1)response.getBooks().toArray()[0]).getGenre());
+    }
+
+    @Test
+    public void userService_GetRecommendations_WhenRecommendationServiceThrowsException_ShouldReturnMostRelevantsBookResponse() throws Exception {
+        Book book = BookStub.get();
+        List<Book> bookList = new ArrayList<>();
+        bookList.add(book);
+        User user = UserStub.get();
+
+        when(recommendationService.getTwentyRecommendationsForAnUser(1)).thenThrow(new Exception());
+        when(userRepository.findByUsername(any())).thenReturn(user);
+        when(ratingRepository.findMostRelevantBooks()).thenReturn(bookList);
         RecommendationResponseV1 response = userService.getRecommendations("leomn138");
 
         assertEquals(1, response.getBooks().size());

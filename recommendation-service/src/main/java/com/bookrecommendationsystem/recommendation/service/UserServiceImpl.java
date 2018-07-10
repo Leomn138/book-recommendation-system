@@ -64,8 +64,15 @@ public class UserServiceImpl implements UserService {
             }
             return mapBookSetToRecommendationV1Response(bookSet);
         } catch (Exception e) {
-            // TODO getTop20MostLikedRatingBooks
-            return null;
+            Set<BookResponseV1> bookSet = new HashSet<>();
+            List<Book> mostRelevantBooks = ratingRepository.findMostRelevantBooks();
+            for (int i = 0; i < 20 ; i++) {
+                if (i < mostRelevantBooks.size()) {
+                    BookResponseV1 bookResponse = mapBookToBookResponseV1(mostRelevantBooks.get(i));
+                    bookSet.add(bookResponse);
+                }
+            }
+            return mapBookSetToRecommendationV1Response(bookSet);
         }
     }
 
@@ -170,5 +177,15 @@ public class UserServiceImpl implements UserService {
         ratingResponse.setStatusCode(HttpStatus.BAD_REQUEST);
         ratingResponse.setError(error);
         return ratingResponse;
+    }
+
+    private BookResponseV1 mapBookToBookResponseV1(Book book) {
+        BookResponseV1 bookResponse = new BookResponseV1();
+        bookResponse.setGenre(book.getGenre());
+        bookResponse.setAsin(book.getAsin());
+        bookResponse.setAuthor(book.getAuthor());
+        bookResponse.setTitle(book.getTitle());
+        bookResponse.setStatusCode(HttpStatus.OK);
+        return bookResponse;
     }
 }
