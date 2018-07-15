@@ -1,5 +1,8 @@
 package com.bookrecommendationsystem.recommendation.stub;
 
+import com.bookrecommendationsystem.recommendation.domain.Book;
+import com.bookrecommendationsystem.recommendation.domain.Recommendation;
+import com.bookrecommendationsystem.recommendation.domain.User;
 import com.bookrecommendationsystem.recommendation.dto.BookResponseV1;
 import com.bookrecommendationsystem.recommendation.dto.RecommendationResponseV1;
 import org.springframework.http.HttpStatus;
@@ -14,5 +17,15 @@ public class RecommendationStub {
         recommendationResponse.setBooks(bookResponseList);
         recommendationResponse.setStatusCode(HttpStatus.OK);
         return recommendationResponse;
+    }
+
+    public static Recommendation get() {
+        Book book = BookStub.get();
+        User user = UserStub.get();
+        Recommendation recommendation = new Recommendation();
+        recommendation.setBook(book);
+        recommendation.setUser(user);
+        recommendation.setRating(10);
+        return recommendation;
     }
 }

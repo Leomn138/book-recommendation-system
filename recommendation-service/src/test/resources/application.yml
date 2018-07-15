@@ -22,3 +22,6 @@ spark:
       interactionsNumber: 10
       lambda: 0.01
       cron: 0 0 * ? * *
+recommendations:
+  scheduling:
+    enabled: false

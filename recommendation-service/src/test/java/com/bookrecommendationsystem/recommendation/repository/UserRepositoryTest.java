@@ -2,7 +2,6 @@ package com.bookrecommendationsystem.recommendation.repository;
 
 import com.bookrecommendationsystem.recommendation.domain.User;
 import com.bookrecommendationsystem.recommendation.stub.UserStub;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

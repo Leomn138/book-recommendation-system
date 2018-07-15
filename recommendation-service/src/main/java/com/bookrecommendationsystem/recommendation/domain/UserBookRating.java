@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "rating")
-public class Rating implements Serializable {
+public class UserBookRating implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

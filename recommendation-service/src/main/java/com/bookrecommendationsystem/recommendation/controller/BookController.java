@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -19,26 +18,26 @@ public class BookController {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	@RequestMapping(path = "/v1/books/{asin}", method = RequestMethod.GET)
 	public ResponseEntity<BookResponseV1> getBookByAsinNumber(@PathVariable String asin) {
-		log.info("BookController - Started GetBookByAsinNumber asin: " + asin + ". " + new Date());
+		log.info("Started GetBookByAsinNumber asin: " + asin + ".");
 		try {
 			BookResponseV1 book = bookService.findByAsin(asin);
-			log.info("BookController - Finished GetBookByAsinNumber asin: " + asin + ". " + new Date());
+			log.info("Finished GetBookByAsinNumber asin: " + asin + ".");
 			return new ResponseEntity<>(book, book.getStatusCode());
 		} catch (Exception e) {
-			log.error("BookController - Error GetBookByAsinNumber asin: " + asin + ". " + new Date(), e);
+			log.error("Error GetBookByAsinNumber asin: " + asin + ".", e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@RequestMapping(path = "/v1/books", method = RequestMethod.GET)
 	public ResponseEntity<List<BookResponseV1>> getAllBooks() {
-		log.info("BookController - Started GetAllBooks. " + new Date());
+		log.info("Started GetAllBooks. ");
 		try {
 			List<BookResponseV1> books = bookService.getAll();
-			log.info("BookController - Finished GetAllBooks. " + new Date());
+			log.info("Finished GetAllBooks.");
 			return new ResponseEntity<>(books, HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("BookController - Error GetBookByAsinNumber. " + new Date(), e);
+			log.error("Error GetBookByAsinNumber.", e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -1,6 +1,6 @@
 package com.bookrecommendationsystem.recommendation.controller;
 
-import com.bookrecommendationsystem.recommendation.domain.Rating;
+import com.bookrecommendationsystem.recommendation.domain.UserBookRating;
 import com.bookrecommendationsystem.recommendation.dto.BookResponseV1;
 import com.bookrecommendationsystem.recommendation.dto.RatingResponseV1;
 import com.bookrecommendationsystem.recommendation.dto.RecommendationResponseV1;
@@ -49,8 +49,8 @@ public class UserControllerTests {
 		mockMvc.perform(post("/v1/users" )
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content("{\"username\": \"leomn138\", \"name\": \"Leonardo\"}"))
-                //.andExpect(jsonPath("$.username").value(user.getUsername()))
-                //.andExpect(jsonPath("$.name").value(user.getName()))
+                .andExpect(jsonPath("$.username").value(user.getUsername()))
+                .andExpect(jsonPath("$.name").value(user.getName()))
                 .andExpect(status().isCreated());
 	}
 
@@ -73,15 +73,15 @@ public class UserControllerTests {
         mockMvc.perform(post("/v1/users/" + rating.getUsername() + "/ratings" )
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content("{\"asin\": \"1234\", \"ratingLevel\": \"LIKED\"}"))
-                //.andExpect(jsonPath("$.username").value(rating.getUsername()))
+                .andExpect(jsonPath("$.username").value(rating.getUsername()))
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void userController_CreateNewRating_WhenAnExceptionOccurs_ShouldReturnInternalServerErrorResponse() throws Exception {
-        final Rating rating = RatingStub.get();
+        final UserBookRating rating = RatingStub.get();
 
-        when(userService.upsertRating(any(), any(), any())).thenThrow(new InternalServerErrorException());
+        when(userService.updateRating(any(), any(), any())).thenThrow(new InternalServerErrorException());
 
         mockMvc.perform(post("/v1/users/" + rating.getUser().getUsername() + "/ratings" )
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -93,20 +93,20 @@ public class UserControllerTests {
     public void userController_UpdateRating_ShouldReturnCorrectRatingResponse() throws Exception {
         final RatingResponseV1 rating = RatingStub.getResponse();
 
-        when(userService.upsertRating(any(), any(), any())).thenReturn(rating);
+        when(userService.updateRating(any(), any(), any())).thenReturn(rating);
 
         mockMvc.perform(put("/v1/users/" + rating.getUsername() + "/ratings/" + rating.getAsin() )
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content("{\"ratingLevel\": \"LIKED\"}"))
-                //.andExpect(jsonPath("$.ratingLevel").value(rating.getRatingLevel()))
+                .andExpect(jsonPath("$.ratingLevel").value(rating.getRatingLevel()))
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void userController_UpdateRating_WhenAnExceptionOccurs_ShouldReturnInternalServerErrorResponse() throws Exception {
-        final Rating rating = RatingStub.get();
+        final UserBookRating rating = RatingStub.get();
 
-        when(userService.upsertRating(any(), any(), any())).thenThrow(new InternalServerErrorException());
+        when(userService.updateRating(any(), any(), any())).thenThrow(new InternalServerErrorException());
 
         mockMvc.perform(post("/v1/users/" + rating.getUser().getUsername() + "/ratings" )
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -129,7 +129,7 @@ public class UserControllerTests {
 
     @Test
     public void userController_GetRecommendations_WhenAnExceptionOccurs_ShouldReturnInternalServerErrorResponse() throws Exception {
-        final Rating rating = RatingStub.get();
+        final UserBookRating rating = RatingStub.get();
 
         when(userService.getRecommendations(any())).thenThrow(new InternalServerErrorException());
 
